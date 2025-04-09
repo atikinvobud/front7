@@ -1,4 +1,3 @@
-// DOM элементы
 const noteText = document.getElementById('noteText');
 const saveNoteButton = document.getElementById('saveNote');
 const notesContainer = document.getElementById('notesContainer');
@@ -6,7 +5,6 @@ const offlineIndicator = document.getElementById('offlineIndicator');
 
 let notes = [];
 
-// ====== LocalStorage ======
 function loadNotes() {
   const storedNotes = localStorage.getItem('notes');
   if (storedNotes) {
@@ -18,7 +16,6 @@ function saveNotes() {
   localStorage.setItem('notes', JSON.stringify(notes));
 }
 
-// ====== Отображение заметок ======
 function displayNotes() {
   notesContainer.innerHTML = '';
 
@@ -43,7 +40,6 @@ function displayNotes() {
   });
 }
 
-// ====== Добавление заметки ======
 function addNote() {
   const text = noteText.value.trim();
   if (text !== '') {
@@ -54,14 +50,12 @@ function addNote() {
   }
 }
 
-// ====== Удаление заметки ======
 function deleteNote(index) {
   notes.splice(index, 1);
   saveNotes();
   displayNotes();
 }
 
-// ====== Редактирование заметки ======
 function editNote(index) {
   const newText = prompt('Редактировать заметку:', notes[index]);
   if (newText !== null && newText.trim() !== '') {
@@ -71,28 +65,40 @@ function editNote(index) {
   }
 }
 
-// ====== Обновление индикатора "Офлайн-режим" ======
-function updateIndicator() {
-  if (navigator.onLine) {
-    offlineIndicator.style.display = 'none';  // Скрываем индикатор, если есть интернет
-  } else {
-    offlineIndicator.style.display = 'block'; // Показываем индикатор, если интернета нет
-  }
+function updateConnectionStatus() {
+  fetch("https://www.gstatic.com/generate_204", {
+    method: "GET",
+    mode: "no-cors",
+    cache: "no-store"
+  })
+    .then(() => {
+      offlineIndicator.style.display = "none"; 
+    })
+    .catch(() => {
+      offlineIndicator.style.display = "block";
+    });
 }
 
-// ====== Инициализация ======
 window.addEventListener('load', () => {
   loadNotes();
   displayNotes();
-  updateIndicator(); // Проверим статус интернета при загрузке страницы
+  updateConnectionStatus(); 
 
-  // Периодическая проверка состояния интернета
-  setInterval(updateIndicator, 5000); // каждые 5 секунд
+  setInterval(updateConnectionStatus, 5000);
 });
 
-// ====== Слушаем события для изменения состояния сети ======
-window.addEventListener('online', updateIndicator);
-window.addEventListener('offline', updateIndicator);
+window.addEventListener('online', updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
 
-// ====== Кнопка сохранения заметки ======
 saveNoteButton.addEventListener('click', addNote);
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then((registration) => {
+        console.log('Service Worker успешно зарегистрирован:', registration.scope);
+      })
+      .catch((error) => {
+        console.error('Ошибка при регистрации Service Worker:', error);
+      });
+  });
+}
