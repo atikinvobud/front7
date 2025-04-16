@@ -3,27 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Заметки (PWA)</title>
+  <title>Умный список задач</title>
+  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4caf50" />
 </head>
 <body>
-  <div class="offline-indicator" id="offlineIndicator">Офлайн-режим</div>
+  <h1>Умный список задач</h1>
 
-  <header>
-    <h1>Мои Заметки</h1>
-  </header>
+  <div>
+    <input type="text" id="noteText" placeholder="Введите задачу" />
+    <button id="saveNote">Добавить</button>
+  </div>
 
-  <main>
-    <div class="note-input">
-      <textarea id="noteText" placeholder="Введите заметку..."></textarea>
-      <button id="saveNote">Добавить</button>
-    </div>
+  <div class="filters">
+    <button data-filter="all">Все</button>
+    <button data-filter="active">Активные</button>
+    <button data-filter="completed">Выполненные</button>
+  </div>
+  <button id="unsubscribeNotifications">Отписаться от уведомлений</button>
+  <button id="enableNotifications">Включить уведомления</button>
+  
+  <ul id="notesContainer"></ul>
 
-    <ul class="notes-list" id="notesContainer">
-    </ul>
-  </main>
+  <div id="offlineIndicator" style="display: none;">Вы офлайн</div>
 
   <script src="script.js"></script>
 </body>

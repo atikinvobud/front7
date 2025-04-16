@@ -1,14 +1,15 @@
 const CACHE_NAME = 'notes-app-cache-v1';
 const urlsToCache = [
   './',
-  './index.html',
   './style.css',
-  './script.js',
+  './index.html',
   './manifest.json',
+  './script.js',
   './icons/icon-192x192.png',
   './icons/icon-512x512.png'
 ];
 
+// Установка сервис-воркера
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -17,6 +18,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
+// Активизация сервис-воркера
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -31,6 +33,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Перехват запросов
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
@@ -38,5 +41,18 @@ self.addEventListener('fetch', (event) => {
     }).catch(() => {
       return caches.match('./index.html');
     })
+  );
+});
+
+// Обработка push-уведомлений
+self.addEventListener('push', function (event) {
+  const options = {
+    body: event.data.text(), // Содержимое уведомления
+    icon: '/icons/icon-192x192.png', // Иконка уведомления
+    badge: '/icons/icon-192x192.png', // Значок уведомления
+  };
+
+  event.waitUntil(
+    self.registration.showNotification('Уведомление от PWA', options)
   );
 });
